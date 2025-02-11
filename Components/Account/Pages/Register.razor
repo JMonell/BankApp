@@ -32,6 +32,28 @@
                 <label for="email">Email</label>
                 <ValidationMessage For="() => Input.Email" class="text-danger" />
             </div>
+
+            <ValidationSummary class="text-danger" role="alert" />
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.PhoneNumber" class="form-control" autocomplete="SocialSecurityNumber" aria-required="true" placeholder="+4612345678" />
+                <label for="PhoneNumber">PhoneNumber</label>
+                <ValidationMessage For="() => Input.PhoneNumber" class="text-danger" />
+            </div>
+
+            <ValidationSummary class="text-danger" role="alert" />
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.SocialSecurityNumber" class="form-control" autocomplete="SocialSecurityNumber" aria-required="true" placeholder="202501011234" />
+                <label for="SocialSecurityNumber">SocialSecurityNumber</label>
+                <ValidationMessage For="() => Input.SocialSecurityNumber" class="text-danger" />
+            </div>
+
+            <ValidationSummary class="text-danger" role="alert" />
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.Address" class="form-control" autocomplete="Address" aria-required="true" placeholder="Vägkanten 25" />
+                <label for="Address">Address</label>
+                <ValidationMessage For="() => Input.Address" class="text-danger" />
+            </div>
+
             <div class="form-floating mb-3">
                 <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
                 <label for="password">Password</label>
@@ -68,6 +90,56 @@
     public async Task RegisterUser(EditContext editContext)
     {
         var user = CreateUser();
+
+        user.SocialSecurityNumber = Input.SocialSecurityNumber;
+        user.Address = Input.Address;
+        @* user.PhoneNumber = Input.PhoneNumber; *@
+
+        if(Input.PhoneNumber is not null){
+            user.PhoneNumber = Input.PhoneNumber;
+
+            var existingUser = UserManager.Users
+            .Any(u=> u.PhoneNumber != null && u.PhoneNumber == user.PhoneNumber);
+
+            if(existingUser){
+                identityErrors = new[]{
+                    new IdentityError{Description = "already in use"}
+                };
+            return;
+            }
+        }
+
+        if(Input.SocialSecurityNumber is not null){
+            user.SocialSecurityNumber = Input.SocialSecurityNumber;
+
+            var existingUser = UserManager.Users
+            .Any(u=> u.SocialSecurityNumber != null && u.SocialSecurityNumber == user.SocialSecurityNumber);
+
+            if(existingUser){
+                identityErrors = new[]{
+                    new IdentityError{Description = "already in use"}
+                };
+            return;
+            }
+        }
+
+        @* if(Input.Address is not null){
+            user.Address = Input.Address;
+
+            var existingUser = UserManager.Users
+            .Any(u=> u.Address != null && u.Address == user.Address);
+
+            if(existingUser){
+                identityErrors = new[]{
+                    new IdentityError{Description = "already in use"}
+                };
+            return;
+            }
+        } *@
+
+
+
+
 
         await UserStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
         var emailStore = GetEmailStore();
@@ -130,6 +202,22 @@
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; } = "";
+
+        [Required]
+        [StringLength(32, ErrorMessage = "The phone number must be minimum of characters long.", MinimumLength = 10)]   
+        [RegularExpression(@"^\+?\d{10,15}$", ErrorMessage = "The phone number must contain only numbers.")]
+        [Display(Name = "PhoneNumber")]
+        public string PhoneNumber { get; set; } = "";
+
+        [Required]
+        [StringLength(12, ErrorMessage = "The SocialSecurityNumber must be 12 characters long.", MinimumLength = 12)]   
+        [RegularExpression(@"^\d{12}$", ErrorMessage = "The Social Security Number must contain only numbers.")]
+        [Display(Name = "SocialSecurityNumber")]
+        public string SocialSecurityNumber { get; set; } = "";
+
+        [Required]
+        [Display(Name = "Address")]
+        public string Address { get; set; } = "";
 
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
