@@ -14,7 +14,7 @@
 <h3>Profile</h3>
 <StatusMessage />
 
-<div class="row">
+@* <div class="row">
     <div class="col-md-6">
         <EditForm Model="Input" FormName="profile" OnValidSubmit="OnValidSubmitAsync" method="post">
             <DataAnnotationsValidator />
@@ -31,6 +31,18 @@
             <button type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
         </EditForm>
     </div>
+</div> *@
+
+<div class="card" style="width: 18rem;">
+  <div class="card-header">
+    Info
+  </div>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item">Email: @user.Email</li>
+    <li class="list-group-item">Phonenumber: @user.PhoneNumber</li>
+    <li class="list-group-item">Fullname: @user.FirstName @user.LastName</li>
+    <li class="list-group-item">Address: @user.Address</li>
+  </ul>
 </div>
 
 @code {

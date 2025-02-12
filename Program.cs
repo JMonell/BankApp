@@ -69,18 +69,18 @@ public class Program
 
 
         //creating a scope
-        using(var scope = app.Services.CreateScope()){ //this will run in a separate environment
+            using(var scope = app.Services.CreateScope()){ //this will run in a separate environment
 
-            var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>(); 
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>(); 
 
-            var roles = new[] {"Admin", "User"};
+                var roles = new[] {"Admin", "User"};
 
-            foreach(var role in roles){
-                if(!await roleManager.RoleExistsAsync(role)){
-                    await roleManager.CreateAsync(new IdentityRole(role));
+                foreach(var role in roles){
+                    if(!await roleManager.RoleExistsAsync(role)){
+                        await roleManager.CreateAsync(new IdentityRole(role));
+                    }
                 }
             }
-        }
 
         using(var scope = app.Services.CreateScope()){ //this will run in a separate environment
 

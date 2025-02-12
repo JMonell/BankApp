@@ -35,6 +35,20 @@
 
             <ValidationSummary class="text-danger" role="alert" />
             <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.FirstName" class="form-control" autocomplete="username" aria-required="true" placeholder="bob" />
+                <label for="FirstName">FirstName</label>
+                <ValidationMessage For="() => Input.FirstName" class="text-danger" />
+            </div>
+
+            <ValidationSummary class="text-danger" role="alert" />
+            <div class="form-floating mb-3">
+                <InputText @bind-Value="Input.LastName" class="form-control" autocomplete="username" aria-required="true" placeholder="jones" />
+                <label for="LastName">LastName</label>
+                <ValidationMessage For="() => Input.LastName" class="text-danger" />
+            </div>
+
+            <ValidationSummary class="text-danger" role="alert" />
+            <div class="form-floating mb-3">
                 <InputText @bind-Value="Input.PhoneNumber" class="form-control" autocomplete="SocialSecurityNumber" aria-required="true" placeholder="+4612345678" />
                 <label for="PhoneNumber">PhoneNumber</label>
                 <ValidationMessage For="() => Input.PhoneNumber" class="text-danger" />
@@ -93,6 +107,8 @@
 
         user.SocialSecurityNumber = Input.SocialSecurityNumber;
         user.Address = Input.Address;
+        user.FirstName = Input.FirstName;
+        user.LastName = Input.LastName;
         @* user.PhoneNumber = Input.PhoneNumber; *@
 
         if(Input.PhoneNumber is not null){
@@ -152,6 +168,8 @@
             return;
         }
 
+        await UserManager.AddToRoleAsync(user, "user");
+
         Logger.LogInformation("User created a new account with password.");
 
         var userId = await UserManager.GetUserIdAsync(user);
@@ -203,6 +221,17 @@
         [Display(Name = "Email")]
         public string Email { get; set; } = "";
 
+        [Required]
+        [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "The firstname must contain only letters.")]
+        [Display(Name = "FirstName")]
+        public string FirstName { get; set; } = "";
+        
+
+        [Required]
+        [RegularExpression(@"^[a-zA-Z]+$", ErrorMessage = "The lastname must contain only letters.")]
+        [Display(Name = "LastName")]
+        public string LastName { get; set; } = "";
+        
         [Required]
         [StringLength(32, ErrorMessage = "The phone number must be minimum of characters long.", MinimumLength = 10)]   
         [RegularExpression(@"^\+?\d{10,15}$", ErrorMessage = "The phone number must contain only numbers.")]

@@ -1,9 +1,15 @@
 ﻿@page "/auth"
 
+@using BankApp.Data
 @using Microsoft.AspNetCore.Authorization
+@using BankApp.Models
+@using BankApp
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> userManager
+@inject AuthenticationStateProvider authenticationStateProvider
 
-@* @attribute [Authorize(Roles = "Admin")] *@
-@attribute [Authorize]
+@attribute [Authorize(Roles = "Admin")]
+@* @attribute [Authorize] *@
 
 <PageTitle>Auth</PageTitle>
 
@@ -15,8 +21,57 @@
 
 <AuthorizeView Roles = "Admin">
     Hello @context.User.Identity?.Name! You are an Admin
-</AuthorizeView>
+        <div class="table-responsive" style="margin-top: 5%;">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone Number</th>
+                        <th>Address</th>
+                        <th>Social Security Number</th>
+                        <th>Role</th>
+                    </tr>
+                </thead>   
+                <tbody>
+                    @foreach(var u in users ){
+                        <tr>
+                            <td>@u.FirstName @u.LastName</td>
+                            <td>@u.Email</td>
+                            <td>@u.PhoneNumber</td>
+                            <td>@u.Address</td>
+                            <td>@u.SocialSecurityNumber</td>
+                            <td>
+                                @{
+                                    string joinRoles = string.Join(",", userRoles[u.Id]);
+                                    if(userRoles[u.Id].Contains("Admin"))
+                                    {
+                                        <p>Admin</p>
+                                    }
+                                    else{
+                                        <p>User</p>
+                                    }
+                                }
+                            </td>
 
-<AuthorizeView Roles="User">
-    Hello @context.User.Identity?.Name! You are an User
-</AuthorizeView>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>         
+    }</AuthorizeView>
+
+@code{
+    private List<ApplicationUser> users;
+    private Dictionary<string, List<string>> userRoles = new Dictionary<string, List<string>>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        users = userManager.Users.ToList();
+
+        foreach (var user in users){
+            userRoles[user.Id] = (await userManager.GetRolesAsync(user)).ToList();
+        }
+        @* var auth = await authenticationStateProvider.GetAuthenticationStateAsync(); *@
+    }
+}
