@@ -1,0 +1,160 @@
+@page "/accountManage"
+
+@using System.ComponentModel.DataAnnotations
+@using System.Text
+@using System.Text.Encodings.Web
+@using BankApp.Services
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.WebUtilities
+@using BankApp.Data
+@using BankApp.Models
+@using Microsoft.EntityFrameworkCore
+
+@inject BankService bankService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@rendermode InteractiveServer
+
+
+@inject UserManager<ApplicationUser> userManager
+@inject AuthenticationStateProvider authenticationStateProvider
+
+
+
+<div class="AccountPage">
+    <div class="AccountHeader"></div>
+    <h1>Accounts</h1>
+    <div class="AccountBody">
+
+        <EditForm Model="account" OnValidSubmit="AddAccount">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">AccountName</span>
+                </div>
+                <input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+            </div>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01">AccountType</label>
+                </div>
+
+                <select class="custom-select" @bind="SelectedAccountType">
+                    <option disabled selected>Choose...</option>
+                    @foreach (var accountType in Enum.GetValues(typeof(AccountTypes)))
+                    {
+                        <option value="@accountType">@accountType</option>
+                    }
+                </select>
+            </div>
+
+            <div class="input-group input-group-sm mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-sm">Balance</span>
+                </div>
+                <input type="text" class="form-control" aria-label="Balance" aria-describedby="inputGroup-sizing-sm">
+            </div>
+            <button type="submit">Add</button>
+        </EditForm>
+
+            @* @foreach (var account in accounts)
+            {
+                @* <a href="transfer" style="text-decoration: none;">
+                    <div class="p-3 bg-light text-dark rounded mb-3" style="border: 2px solid gray;">
+                        <h4 class="mb-1">Account Name: @account.Name</h4>
+                        <p class="mb-1"><strong>Account Number:</strong> @account.AccountNumber</p>
+                        <p class="mb-1"><strong>Balance:</strong> $@account.Balance.ToString("N2")</p>
+                        <p class="mb-1"><strong>CardNumber:</strong> $@account.CardNumber</p>
+                    </div>
+                    @* <button @onclick="() => DeleteAccount(account.Id)">Remove</button> *@
+                @* </a> *@
+            }
+        @* else
+        {
+            <div class="p-3 bg-light text-dark rounded mb-3" style="border: 2px solid gray;">
+                <h4 class="mb-1">No account information available</h4>
+            </div>
+        } *@
+
+
+
+        @* Här säger vi om kontona är ej laddade, visa paragrafen Loading... *@
+@if (accounts == null) 
+{
+    <p>Loading...</p>
+}
+
+@* Annars ska det visa You have no accounts yet ifall användaren inte har några konton alls *@
+else if (accounts.Count == 0)
+{
+    <p>You have no accounts yet.</p>
+}
+
+@* Om konton finns, visas denna tabell *@
+else
+{
+    @* Här finns en table (tabell) med en klass inbyggt med Bootstraps egna CSS. *@
+    <table class="table table-dark table-striped">
+        <thead>
+            @* Huvudets av tabellen så har vi table rows som har olika namn på sig. *@
+            <tr>
+                <th>Account Name</th>
+                <th>Account Number</th>
+                <th>Balance</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @* Här används en foreach för att enkelt gå igenom en lista av konton och visar dom i tabellen. För varje konto i List<Account> accounts. *@
+            @foreach (var account in accounts) 
+            {
+                <tr>
+                    <td>@account.Name</td>
+                    <td>@account.AccountNumber</td>
+                    <td>@account.Balance</td>
+                    <td>@account.AccountType</td>
+
+                    @* Detta visar om kontot är aktiv eller oaktiv. *@
+                    <td>@(account.IsActive ? "Active" : "Inactive")</td>
+
+                    @* När onclick knappen klickas triggas igång DeleteAccount() funktionen med rätt account.id *@
+                    <td>
+                        @* <button class="btn btn-danger btn-sm" @onclick="() => DeleteAccount(account.Id)">Delete</button> *@
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    }
+
+    </div> 
+
+
+
+    <div class="AccountFooter"></div>
+</div>
+
+
+@code{
+    private List<Account> accounts = new();
+    private Account account = new Account();
+
+    private AccountTypes SelectedAccountType { get; set; }
+
+
+    protected override async Task OnInitializedAsync(){
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = await userManager.GetUserAsync(authState.User);
+        accounts = await bankService.GetAccountsByUser(user);
+        @* if(!accounts.Any()){
+            await bankService.CreateMainAccountAsync(user);
+        } *@
+    }
+
+    public async Task AddAccount(){
+
+    }
+    
+}

@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using BankApp.Components;
 using BankApp.Components.Account;
 using BankApp.Data;
+using BankApp.Services;
 
 namespace BankApp;
 
@@ -21,6 +22,7 @@ public class Program
         builder.Services.AddScoped<IdentityUserAccessor>();
         builder.Services.AddScoped<IdentityRedirectManager>();
         builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+        builder.Services.AddScoped<BankService>();
 
         builder.Services.AddAuthentication(options =>
             {
