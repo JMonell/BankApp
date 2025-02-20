@@ -30,28 +30,38 @@
                 <div class="input-group-prepend">
                     <span class="input-group-text" id="inputGroup-sizing-default">AccountName</span>
                 </div>
-                <input type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+                <input type="text" class="form-control" @bind="account.Name" aria-label="Default" aria-describedby="inputGroup-sizing-default">
             </div>
 
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
                     <label class="input-group-text" for="inputGroupSelect01">AccountType</label>
                 </div>
+                
 
-                <select class="custom-select" @bind="SelectedAccountType">
+                <select class="custom-select" @bind="account.AccountType">
                     <option disabled selected>Choose...</option>
-                    @foreach (var accountType in Enum.GetValues(typeof(AccountTypes)))
+                    @foreach (var accountType in Enum.GetValues(typeof(AccountTypes)).Cast<AccountTypes>())
                     {
-                        <option value="@accountType">@accountType</option>
+                        <option value="@accountType" >@accountType</option>
                     }
                 </select>
+                
             </div>
+            @* <div class="form-check mb-3">
+                <InputCheckbox class="form-check-input" @bind="account.IsActive" />
+                <label class="form-check-label">Active Account</label>
+            </div> *@
 
             <div class="input-group input-group-sm mb-3">
                 <div class="input-group-prepend">
                     <span class="input-group-text" id="inputGroup-sizing-sm">Balance</span>
                 </div>
-                <input type="text" class="form-control" aria-label="Balance" aria-describedby="inputGroup-sizing-sm">
+                <InputNumber type="number" class="form-control" @bind-Value="account.Balance" aria-label="Balance" aria-describedby="inputGroup-sizing-sm"/>
+            </div>
+            <div class="form-check mb-3">
+                <InputCheckbox class="form-check-input" @bind-Value="account.IsActive" />
+                <label class="form-check-label">Active Account</label>
             </div>
             <button type="submit">Add</button>
         </EditForm>
@@ -112,9 +122,9 @@ else
 
 @code{
     private List<Account> accounts = new();
-    private Account account = new Account();
+    private Account account = new();
 
-    private AccountTypes SelectedAccountType { get; set; }
+    @* private AccountTypes SelectedAccountType { get; set; } *@
 
 
     protected override async Task OnInitializedAsync(){
@@ -125,8 +135,16 @@ else
         await bankService.CreateMainAccountAsync(user);
     }
 
-    public async Task AddAccount(){
+    public async Task AddAccount() {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = await userManager.GetUserAsync(authState.User);
 
+        await bankService.AddAccountAsync(user, account);
+
+
+        accounts = await bankService.GetAccountsByUserAsync(user);
+        //reset the accountlist
+        account = new Account();
     }
 
     private async Task DeleteAccount(int accountId)

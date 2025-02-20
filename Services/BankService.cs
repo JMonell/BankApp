@@ -20,8 +20,14 @@ public class BankService{
         _context = context;
     }
 
-    public async Task AddAccount(Account account)
-    {
+    public async Task AddAccountAsync(ApplicationUser user, Account account){
+
+        account.UserId = user.Id;
+        account.AccountNumber = await GetAccountnumber();
+        // account.AccountType = SelectedAccountType;
+        // account.IsActive = true;
+
+
         _context.Accounts.Add(account);
         await _context.SaveChangesAsync();
     }
@@ -52,46 +58,6 @@ public class BankService{
         }
     }
 
-    // public async Task DeleteAccountAsync(int accountId){
-    //     var account = await _context.Accounts.FindAsync(accountId);
-    //     if (account != null){
-    //         await _context.Accounts.DeleteAsync(account);
-            
-    //     }
-    // }
-
-    // public async Task DeleteAccountAsync(int accountId){
-    //     await _context.Accounts
-    //           //FirstOrDefaultAsync checks the first matching account and if it doesn't exist return default(NULL)
-    //         .FirstOrDefaultAsync(a => a.Id == account.Id && a.UserId == user.Id);
-
-    //     if (account != null){
-    //         _context.Accounts.Remove(account);
-    //         await _context.SaveChangesAsync();
-    //     }
-    // }
-    
-/*
-
-private async Task DeleteUser(string userId)
-    {
-        var user = await userManager.FindByIdAsync(userId);
-        if (user != null){
-            var roles = await userManager.GetRolesAsync(user); // Get user roles
-            if (roles.Contains("User")){
-                await userManager.DeleteAsync(user);
-                await ShowUsers(); // Refresh user list
-            }
-            else{
-                Console.WriteLine("can not delete Admin");
-                await ShowUsers(); // Refresh user list
-            }
-        }
-
-        
-    }
-
-*/
         public async Task DeleteAccountAsync(ApplicationUser user, int accountId)
         {
             var account = await _context.Accounts
