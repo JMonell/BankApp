@@ -20,6 +20,8 @@ public class BankService{
         _context = context;
     }
 
+    #region account
+
     public async Task AddAccountAsync(ApplicationUser user, Account account){
 
         account.UserId = user.Id;
@@ -70,21 +72,6 @@ public class BankService{
             }
         }
 
-    // private async Task SaveAccount(ApplicationUser user)
-    // {
-    //     if (user is null) return;
-
-    //         account.UserId = user.Id;
-    //         account.AccountNumber = await getAccountnumber();
-    //         account.IsActive = true;
-
-    //         _context.Accounts.Add(account); //add to the local context
-    //         await _context.SaveChangesAsync(); 
-
-    //         accounts.Add(account); //add to the local list
-    //         account = new Account(); //reset the form
-    // }
-
     private async Task<String> GetAccountnumber(){
         Random random = new Random();
         string clearingNum = "8008-5";
@@ -96,4 +83,18 @@ public class BankService{
         string result = $"{clearingNum}, {firstPart} {secondPart}";
         return result;
     }
+    #endregion
+
+    #region Transactions
+
+    private async Task AddTransaction(){
+
+    }
+
+
+
+
+
+    
+    #endregion
 }

@@ -1,0 +1,182 @@
+@page "/transaction"
+
+@using System.ComponentModel.DataAnnotations
+@using System.Text
+@using System.Text.Encodings.Web
+@using BankApp.Services
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.AspNetCore.WebUtilities
+@using BankApp.Data
+@using BankApp.Models
+@using Microsoft.EntityFrameworkCore
+
+@inject BankService bankService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@inject UserManager<ApplicationUser> userManager
+@inject AuthenticationStateProvider authenticationStateProvider
+
+@rendermode InteractiveServer
+
+<h1>hej </h1>
+
+
+
+
+@* <div class="TransactionPage">
+    <div class="PageHeader"></div>
+    <h1>Accounts</h1>
+    <div class="PageBody">
+
+        <EditForm Model="account" OnValidSubmit="AddAccount">
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-default">AccountName</span>
+                </div>
+                <input type="text" class="form-control" @bind="account.Name" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+            </div>
+
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01">AccountType</label>
+                </div>
+                
+
+                <select class="custom-select" @bind="account.AccountType">
+                    <option disabled selected>Choose...</option>
+                    @foreach (var accountType in Enum.GetValues(typeof(AccountTypes)).Cast<AccountTypes>())
+                    {
+                        <option value="@accountType" >@accountType</option>
+                    }
+                </select>
+            </div>
+
+            <div class="input-group input-group-sm mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-sm">Balance</span>
+                </div>
+                <InputNumber type="number" class="form-control" @bind-Value="account.Balance" aria-label="Balance" aria-describedby="inputGroup-sizing-sm"/>
+            </div>
+            <div class="form-check mb-3">
+                <InputCheckbox class="form-check-input" @bind-Value="account.IsActive" />
+                <label class="form-check-label">Active Account</label>
+            </div>
+            <button type="submit">Add</button>
+        </EditForm>
+    </div>
+</div> *@
+@* <div class="TransactionPage">
+    <div class="TransactionHeader">
+        Transactions
+    </div>
+    <div class="TransactionBody">
+        <EditForm Model="transaction" OnValidSubmit="MakeTransaction">
+            <div class="input-group input-group-sm mb-3">
+                <div class="input-group-prepend">
+                    <span class="input-group-text" id="inputGroup-sizing-sm">fromAccount</span>
+                </div>
+                <InputNumber type="number" class="form-control" @bind-Value="transaction.FromAccountId" aria-label="fromAccount" aria-describedby="inputGroup-sizing-sm"/>
+            </div>
+
+
+
+            <div class="mb-3">
+        <label for="FromAccountId">From Account</label>
+        <InputSelect id="fromAccount" @bind-Value="transaction.FromAccountId">
+            <option value="">Select an Account</option>
+            @foreach (var acc in accounts)
+            {
+                <option value="@acc.Id">@acc.Id - @acc.Name</option>
+            }
+        </InputSelect>
+    </div>
+
+        </EditForm>
+
+
+
+
+
+
+    </div>
+    <div class="TransactionFooter">
+        show history here
+    </div>
+</div>
+
+
+
+
+
+
+ *@
+
+@code{
+@* 
+    private int FromAccountId;
+    private int ToAccountId;
+    private decimal Amount;
+    private List<Account> accounts = new();
+    private Transaction transaction = new();
+
+    protected override async Task OnInitializedAsync(){
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = await userManager.GetUserAsync(authState.User);
+        accounts = await bankService.GetAccountsByUserAsync(user);
+    }
+
+    public async Task MakeTransaction(){
+
+    }
+ *@
+} 
+@* 
+
+
+<EditForm Model="@transaction" OnValidSubmit="ProcessTransaction">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label for="fromAccount">From Account</label>
+        <InputSelect id="fromAccount" @bind-Value="transaction.FromAccountId">
+            <option value="">Select an Account</option>
+            @foreach (var acc in accounts)
+            {
+                <option value="@acc.Id">@acc.Id - @acc.AccountName</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="mb-3">
+        <label for="toAccount">To Account</label>
+        <InputSelect id="toAccount" @bind-Value="transaction.ToAccountId">
+            <option value="">Select an Account</option>
+            @foreach (var acc in accounts)
+            {
+                <option value="@acc.Id">@acc.Id - @acc.AccountName</option>
+            }
+        </InputSelect>
+    </div>
+
+    <div class="mb-3">
+        <label for="amount">Amount</label>
+        <InputNumber id="amount" class="form-control" @bind-Value="transaction.Amount" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Transfer</button>
+</EditForm>
+
+@code {
+    private Transaction transaction = new Transaction();
+    private List<Account> accounts = new(); // Fetch account data from API or database
+
+    private void ProcessTransaction()
+    {
+        // Add logic to process the transaction
+        Console.WriteLine($"Transferring {transaction.Amount} from {transaction.FromAccountId} to {transaction.ToAccountId}");
+    }
+}
+
+
+ *@
